@@ -53,9 +53,12 @@ if __name__ == "__main__":
                     "rev": rev
                 }
                 #print(left, count, photo_params)
-                photo_resp = vk.request("photos.get", photo_params).json()["response"]
+                json_resp = vk.request("photos.get", photo_params).json()
+                if "error" in json_resp:
+                    raise Exception("У пользователя приватный профиль")
+                photo_resp = json_resp["response"]
                 files_info = [FileInfo(
-                    e["orig_photo"]["url"],
+                    e["orig_photo"]["url"] if "orig_photo" in e else e["sizes"][-1]["url"],
                     str(left + i + 1),
                     {
                         "text": e["text"]
